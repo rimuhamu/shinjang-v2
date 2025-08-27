@@ -4,13 +4,15 @@ import { redirect } from 'next/navigation';
 import { Heading } from '@/components/Heading';
 import { Separator } from '@/components/ui/separator';
 import configPromise from '@payload-config';
+import { Product } from '../../../payload-types';
 
 export default async function OrdersPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | undefined };
+  searchParams?: Promise<{ [key: string]: string | undefined }>;
 }) {
-  const customerName = searchParams?.name;
+  const resolvedSearchParams = await searchParams;
+  const customerName = resolvedSearchParams?.name;
 
   if (!customerName) {
     redirect('/');
@@ -40,7 +42,24 @@ export default async function OrdersPage({
     console.log('result found:', result.docs.length);
 
     const customer = result.docs[0];
-    const products = customer.ordered || [];
+    const orderedItems = customer.ordered || [];
+
+    const products = orderedItems
+      .filter(
+        (item): item is Product => typeof item === 'object' && item !== null
+      )
+      .map((product) => ({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        batchNumber: product.batchNumber,
+        country: product.country,
+        status: product.status,
+        isPaid: product.isPaid ?? false,
+        notes: product.notes,
+        updatedAt: product.updatedAt,
+        createdAt: product.createdAt,
+      }));
 
     return (
       <div className='flex-col'>
