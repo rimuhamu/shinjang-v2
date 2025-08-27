@@ -10,18 +10,33 @@ export type ProductColumn = {
   batchNumber: number;
   country: 'Korea' | 'China' | 'Japan';
   status:
-    | 'Ordered to Seller'
-    | 'In Progress'
-    | 'Arrived WH LN'
-    | 'OTW INA'
-    | 'Arrived WH INA'
-    | 'Arrived Admin';
+    | 'ordered_to_seller'
+    | 'in_progress'
+    | 'arrived_wh_ln'
+    | 'otw_ina'
+    | 'arrived_wh_ina'
+    | 'arrived_admin';
   isPaid: boolean;
   taxPayment?: number | null;
   notes?: string | null;
   updatedAt: string;
   createdAt: string;
 };
+
+const statusLabels = {
+  ordered_to_seller: '📝 Ordered to Seller',
+  in_progress: '⚙️ In Progress',
+  arrived_wh_ln: '🏭 Arrived WH LN',
+  otw_ina: '🚢 OTW INA',
+  arrived_wh_ina: '🏬 Arrived WH INA',
+  arrived_admin: '✅ Arrived Admin',
+} as const;
+
+const countryLabels = {
+  Korea: '🇰🇷 South Korea',
+  China: '🇨🇳 China',
+  Japan: '🇯🇵 Japan',
+} as const;
 
 export const columns: ColumnDef<ProductColumn>[] = [
   {
@@ -39,10 +54,22 @@ export const columns: ColumnDef<ProductColumn>[] = [
   {
     accessorKey: 'country',
     header: 'Country',
+    cell: ({ row }) => {
+      const country = row.getValue('country') as keyof typeof countryLabels;
+      return countryLabels[country] || country;
+    },
   },
   {
     accessorKey: 'status',
     header: 'Status',
+    cell: ({ row }) => {
+      const status = row.getValue('status') as keyof typeof statusLabels;
+      return (
+        <span className='px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300'>
+          {statusLabels[status] || status}
+        </span>
+      );
+    },
   },
   {
     accessorKey: 'isPaid',
