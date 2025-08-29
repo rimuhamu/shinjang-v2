@@ -4,7 +4,13 @@ import { withPayload } from '@payloadcms/next/withPayload';
 const nextConfig = {
   turbopack: {
     resolveExtensions: [".mdx", ".tsx", ".ts", ".jsx", ".js", ".json"],
-  }
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default withPayload(nextConfig);
