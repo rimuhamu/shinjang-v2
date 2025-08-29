@@ -1,26 +1,18 @@
-'use client';
 import { GrossPrice } from '@/components/GrossPrice';
 import { NetPrice } from '@/components/NetPrice';
 import { Button } from '@/components/ui/button';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-export default function ConvertPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+interface ConvertPageProps {
+  searchParams: {
+    pt?: string;
+    curr?: string;
+    price?: string;
+  };
+}
 
-  const [isKR, setIsKR] = useState(false);
-
-  const priceType = searchParams.get('pt');
-  const currencyName = searchParams.get('curr')!;
-  const priceInString = searchParams.get('price')!;
-
-  if (currencyName === 'KR' && !isKR) {
-    setIsKR(true);
-  }
-
-  const price = Number(priceInString);
-
+function calculateConversions(currencyName: string, price: number) {
   const posFee = 1800;
   const bantaekFee = 13000;
   const kurirMinFee = 4000;
@@ -54,6 +46,39 @@ export default function ConvertPage() {
   const kurirMinResult = (price * multFactor + kurirMinFee) * rate + fee;
   const kurirMaxResult = (price * multFactor + kurirMaxFee) * rate + fee;
 
+  return {
+    grossResult,
+    nettoResult,
+    semiregistResult,
+    posResult,
+    bantaekResult,
+    kurirMinResult,
+    kurirMaxResult,
+  };
+}
+
+export default function ConvertPage({ searchParams }: ConvertPageProps) {
+  const priceType = searchParams.pt;
+  const currencyName = searchParams.curr;
+  const priceInString = searchParams.price;
+
+  if (!priceType || !currencyName || !priceInString) {
+    redirect('/rate-conversion');
+  }
+
+  const price = Number(priceInString);
+  const isKR = currencyName === 'KR';
+
+  const {
+    grossResult,
+    nettoResult,
+    semiregistResult,
+    posResult,
+    bantaekResult,
+    kurirMinResult,
+    kurirMaxResult,
+  } = calculateConversions(currencyName, price);
+
   if (priceType === 'Kotor') {
     return (
       <div className='flex flex-col items-center pt-20'>
@@ -62,8 +87,8 @@ export default function ConvertPage() {
           currencyName={currencyName}
           result={grossResult}
         />
-        <Button onClick={() => router.push('/rate-conversion')}>
-          Re-Calculate
+        <Button asChild>
+          <Link href='/rate-conversion'>Re-Calculate</Link>
         </Button>
       </div>
     );
@@ -83,10 +108,13 @@ export default function ConvertPage() {
           kurirMinResult={kurirMinResult}
           kurirMaxResult={kurirMaxResult}
         />
-        <Button onClick={() => router.push('/rate-conversion')}>
-          Re-Calculate
+        <Button asChild>
+          <Link href='/rate-conversion'>Re-Calculate</Link>
         </Button>
       </div>
     );
   }
+
+  // if no valid price type, redirect back
+  redirect('/rate-conversion');
 }
