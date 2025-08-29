@@ -1,36 +1,167 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shinjang (Version 2) - Order Tracking Application
 
-## Getting Started
+A Next.js-based order tracking system for group orders (GO) from Korea, China, and Japan, built with PayloadCMS as the headless CMS backend. Upgraded to Nextjs 15 and PayloadCMS 3.
 
-First, run the development server:
+## 🌟 Features
+
+- **Order Tracking**: Search and view order status by customer name
+
+- **Multi-Country Support**: Track orders from Korea (KR), China (CH), and Japan (JP)
+
+- **Rate Conversion**: Built-in currency converter with shipping calculations
+
+- **Admin Panel**: PayloadCMS-powered admin interface for managing customers, products, and orders
+
+- **Responsive Design**: Mobile-friendly interface with Tailwind CSS
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 15, React, TypeScript
+
+- **Backend**: PayloadCMS 3
+
+- **Database**: MongoDB (via Mongoose)
+
+- **Styling**: Tailwind CSS, Shadcn
+
+- **Forms**: React Hook Form with Zod validation
+
+- **Data Tables**: TanStack Table
+
+- **Icons**: Lucide React
+
+- **Notifications**: Sonner
+
+- **Build**: Turbopack
+
+## 📦 Installation
+
+1.  **Clone the repository**
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+git clone <repository-url>
+
+cd shinjang-v2
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2.  **Install dependencies**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+npm install
 
-## Learn More
+```
 
-To learn more about Next.js, take a look at the following resources:
+3.  **Environment Setup**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Create a `.env` file in the root directory with the following variables:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
 
-## Deploy on Vercel
+DATABASE_URI=your_mongodb_connection_string
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+PAYLOAD_SECRET=your_payload_secret_key
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+
+4.  **Seed the database**
+
+```bash
+
+npm run seed
+
+```
+
+## 🚀 Development
+
+Start the development server:
+
+```bash
+
+npm  run  dev
+
+```
+
+The application will be available at:
+
+- **Frontend**: http://localhost:3000
+
+- **Admin Panel**: http://localhost:3000/admin
+
+## 📝 Available Scripts
+
+- `npm run dev` - Start development server with Turbopack
+
+- `npm run build` - Build the application for production with Turbopack
+
+- `npm run start` - Start production server
+
+- `npm run lint` - Run ESLint
+
+- `npm run seed` - Seed database with sample data
+
+## 🗄️ Data Models
+
+### Products
+
+- `name`: Product name (e.g., "PC Jisoo THE ALBUM")
+
+- `price`: Product price as string (e.g., "225000")
+
+- `batchNumber`: Batch identifier (number)
+
+- `country`: Origin country (Korea/China/Japan)
+
+- `status`: Order status with 6 stages
+
+- `isPaid`: Payment status (boolean)
+
+- `notes`: Additional notes (textarea)
+
+### Customers
+
+- `name`: Customer name
+
+- `ordered`: Array of related products
+
+### Users
+
+- `role`: User role (only admin for now)
+
+## 🚦 Order Status Flow
+
+Orders progress through these statuses:
+
+1.  **Ordered to Seller** - Initial order placed
+
+2.  **In Progress** - Being processed by seller
+
+3.  **Arrived WH LN** - Arrived at overseas warehouse
+
+4.  **OTW INA** - On the way to Indonesia
+
+5.  **Arrived WH INA** - Arrived at indonesian warehouse
+
+6.  **Arrived Admin** - Delivered to admin
+
+## 📱 Pages Structure
+
+- `/` - Homepage with customer search
+
+- `/orders` - Order listing with enhanced filtering and visual status
+
+- `/no-results` - No results found page
+
+- `/error` - Error page with recovery options
+
+- `/rate-conversion` - Currency conversion tool
+
+- `/payments` - Payment methods information
+
+- `/tnc-shinjang` - Terms & Conditions for GO services
+
+- `/tnc-shopee` - Terms & Conditions for Shopee checkout
+
+- `/admin` - PayloadCMS 3 admin panel
